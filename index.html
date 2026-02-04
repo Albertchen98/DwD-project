@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="Driving with DINO: Vision Foundation Features as a Unified Bridge for Sim-to-Real Generation in Autonomous Driving.">
+  <meta name="keywords" content="DINO, Autonomous Driving, Sim-to-Real, Video Generation">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Driving with DINO: Vision Foundation Features as a Unified Bridge for Sim-to-Real Generation in Autonomous Driving</title>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+
+    gtag('config', 'G-PYVRSFMDRL');
+  </script>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="./static/images/stewie.jpg">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+</head>
+<body>
+
+<nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="navbar-menu">
+    <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
+      <a class="navbar-item" href="https://keunhong.com">
+      <span class="icon">
+          <i class="fas fa-home"></i>
+      </span>
+      </a>
+
+      <div class="navbar-item has-dropdown is-hoverable">
+        <a class="navbar-link">
+          More Research
+        </a>
+        <div class="navbar-dropdown">
+          <a class="navbar-item" href="https://hypernerf.github.io">
+            HyperNeRF
+          </a>
+          <a class="navbar-item" href="https://nerfies.github.io">
+            Nerfies
+          </a>
+          <a class="navbar-item" href="https://latentfusion.github.io">
+            LatentFusion
+          </a>
+          <a class="navbar-item" href="https://photoshape.github.io">
+            PhotoShape
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</nav>
+
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">Driving with DINO: Vision Foundation Features as a Unified Bridge for Sim-to-Real Generation in Autonomous Driving</h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">Xuyang Chen<sup>1,2*</sup>,</span>
+            <span class="author-block">Conglang Zhang<sup>3,4*</sup>,</span>
+            <span class="author-block">Chuanheng Fu<sup>3,4*</sup>,</span>
+            <span class="author-block">Zihao Yang<sup>5</sup>,</span>
+            <span class="author-block">Kaixuan Zhou<sup>3†</sup>,</span>
+            <span class="author-block">Yizhi Zhang<sup>3</sup>,</span>
+            <span class="author-block">Jianan He<sup>3</sup>,</span>
+            <span class="author-block">Yanfeng Zhang<sup>2</sup>,</span>
+            <span class="author-block">Mingwei Sun<sup>3,4</sup>,</span>
+            <span class="author-block">Zengmao Wang<sup>4</sup>,</span>
+            <span class="author-block">Zhen Dong<sup>4</sup>,</span>
+            <span class="author-block">Xiaoxiao Long<sup>6</sup>,</span>
+            <span class="author-block">Liqiu Meng<sup>1</sup></span>
+          </div>
+
+          <div class="is-size-6 publication-authors">
+            <span class="author-block"><sup>1</sup>Technical University of Munich,</span>
+            <span class="author-block"><sup>2</sup>Huawei Hilbert Research Center (Dresden),</span>
+            <span class="author-block"><sup>3</sup>Huawei Riemann Lab,</span>
+            <span class="author-block"><sup>4</sup>Wuhan University,</span>
+            <span class="author-block"><sup>5</sup>University of Science and Technology of China,</span>
+            <span class="author-block"><sup>6</sup>Nanjing University</span>
+          </div>
+          <div class="is-size-7 publication-authors" style="margin-top: 5px;">
+            <span class="author-block"><sup>*</sup>Equal contribution,</span>
+            <span class="author-block"><sup>†</sup>Project lead</span>
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <span class="link-block">
+                <a href="https://arxiv.org/pdf/2011.12948"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://arxiv.org/abs/2011.12948"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              <!-- Video Link. -->
+              <span class="link-block">
+                <a href="https://www.youtube.com/watch?v=MrKrnHhk8IA"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-youtube"></i>
+                  </span>
+                  <span>Video</span>
+                </a>
+              </span>
+              <!-- Code Link. -->
+              <span class="link-block">
+                <a href="https://github.com/google/nerfies"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span>
+              <!-- Dataset Link. -->
+              <span class="link-block">
+                <a href="https://github.com/google/nerfies/releases/tag/0.1"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="far fa-images"></i>
+                  </span>
+                  <span>Data</span>
+                  </a>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Video Comparison Carousel -->
+<section class="section" style="padding-top: 1rem; padding-bottom: 1rem;">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Sim-to-Real Results</h2>
+        <div class="content has-text-justified">
+          <p>
+            Drag the slider to compare simulation input (left) with our DwD output (right). Use the arrows to browse different scenes.
+          </p>
+        </div>
+
+        <div class="video-carousel-wrapper">
+          <!-- Left Arrow -->
+          <button class="carousel-nav-btn carousel-prev" aria-label="Previous video pair">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+            </svg>
+          </button>
+
+          <!-- Video Comparison Container -->
+          <div class="video-comparison-container video-carousel-item" data-index="0">
+            <div class="video-comparison-wrapper">
+              <div class="video-comparison-item video-right">
+                <video muted loop playsinline>
+                  <source src="./assets/20260123-webvideo/dwd_process/Town01_Route0027_3.mp4" type="video/mp4">
+                </video>
+              </div>
+              <div class="video-comparison-item video-left">
+                <video muted loop playsinline>
+                  <source src="./assets/20260123-webvideo/cg_process/Town01_Route0027_3.mp4" type="video/mp4">
+                </video>
+              </div>
+              <div class="video-comparison-handle">
+                <div class="video-comparison-handle-circle">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+                    <path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z" transform="rotate(180 12 12)"/>
+                  </svg>
+                </div>
+              </div>
+              <div class="video-comparison-label label-left">Simulation</div>
+              <div class="video-comparison-label label-right">DwD (Ours)</div>
+            </div>
+          </div>
+
+          <!-- Right Arrow -->
+          <button class="carousel-nav-btn carousel-next" aria-label="Next video pair">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Carousel Indicators -->
+        <div class="carousel-indicators">
+          <span class="carousel-dot active" data-index="0"></span>
+          <span class="carousel-dot" data-index="1"></span>
+          <span class="carousel-dot" data-index="2"></span>
+          <span class="carousel-dot" data-index="3"></span>
+          <span class="carousel-dot" data-index="4"></span>
+          <span class="carousel-dot" data-index="5"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!--/ Video Comparison Carousel -->
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            Driven by the emergence of Controllable Video Diffusion, existing Sim2Real methods for autonomous driving video generation typically rely on explicit intermediate representations to bridge the domain gap. However, these modalities face a fundamental Consistency-Realism Dilemma. Low-level signals (e.g., edges, blurred images) ensure precise control but compromise realism by "baking in" synthetic artifacts, whereas high-level priors (e.g., depth, semantics, HDMaps) facilitate photorealism but lack the structural detail required for consistent guidance.
+          </p>
+          <p>
+            In this work, we present <span class="dnerf">Driving with DINO (DwD)</span>, a novel framework that leverages Vision Foundation Module (VFM) features as a unified bridge between the simulation and real-world domains. We first identify that these features encode a spectrum of information, from high-level semantics to fine-grained structure. To effectively utilize this, we employ Principal Subspace Projection to discard the high-frequency elements responsible for "texture baking," while concurrently introducing Random Channel Tail Drop to mitigate the structural loss inherent in rigid dimensionality reduction, thereby reconciling realism with control consistency. Furthermore, to fully leverage DINOv3's high-resolution capabilities for enhancing control precision, we introduce a learnable Spatial Alignment Module that adapts these high-resolution features to the diffusion backbone. Finally, we propose a Causal Temporal Aggregator employing causal convolutions to explicitly preserve historical motion context when integrating frame-wise DINO features, which effectively mitigates motion blur and guarantees temporal stability.
+          </p>
+          <p>
+            Extensive experiments show that our approach achieves State-of-the-Art performance, significantly outperforming existing baselines in generating photorealistic driving videos that remain faithfully aligned with the simulation.
+          </p>
+        </div>
+      </div>
+    </div>
+    <!--/ Abstract. -->
+
+    <!-- Main Figure. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Method Overview</h2>
+        <div class="content">
+          <img src="./static/images/mainfigurev2.png" alt="DwD Method Overview" style="width: 100%;">
+        </div>
+      </div>
+    </div>
+    <!--/ Main Figure. -->
+
+    <!-- Method Comparison. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Comparison with Other Methods</h2>
+        <div class="content has-text-justified">
+          <p>
+            Compare our DwD method with other Sim-to-Real approaches. Use the dropdown to select different methods, and drag the slider to compare with the simulation input. Use the arrows to browse different scenes.
+          </p>
+        </div>
+
+        <!-- Method Selector -->
+        <div class="method-selector-wrapper">
+          <label for="method-select" class="method-label">Compare with:</label>
+          <div class="select is-medium">
+            <select id="method-select">
+              <option value="dwd_process" selected>DwD (Ours)</option>
+              <option value="blur_result">Cosmos Transfer 2.5 Blur</option>
+              <option value="edge_process">Cosmos Transfer 2.5 Edge</option>
+              <option value="depth_result">Cosmos Transfer 2.5 Depth</option>
+              <option value="depth_edge_result">Cosmos Transfer 2.5 Depth+Edge</option>
+              <option value="seg_process">Cosmos Transfer 2.5 Seg</option>
+              <option value="seg_edge_result">Cosmos Transfer 2.5 Seg+Edge</option>
+              <option value="fresco_result">Fresco</option>
+              <option value="tclight_result">TCLight</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Video Comparison with Scene Navigation -->
+        <div class="method-comparison-wrapper">
+          <!-- Left Arrow -->
+          <button class="carousel-nav-btn method-carousel-prev" aria-label="Previous scene">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+            </svg>
+          </button>
+
+          <!-- Video Comparison Container -->
+          <div class="video-comparison-container method-comparison-item" data-index="0">
+            <div class="video-comparison-wrapper">
+              <div class="video-comparison-item video-right">
+                <video muted loop playsinline>
+                  <source src="./assets/20260123-webvideo/dwd_process/Town01_Route0027_3.mp4" type="video/mp4">
+                </video>
+              </div>
+              <div class="video-comparison-item video-left">
+                <video muted loop playsinline>
+                  <source src="./assets/20260123-webvideo/cg_process/Town01_Route0027_3.mp4" type="video/mp4">
+                </video>
+              </div>
+              <div class="video-comparison-handle">
+                <div class="video-comparison-handle-circle">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+                    <path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z" transform="rotate(180 12 12)"/>
+                  </svg>
+                </div>
+              </div>
+              <div class="video-comparison-label label-left">Simulation</div>
+              <div class="video-comparison-label label-right method-label-right">DwD (Ours)</div>
+            </div>
+          </div>
+
+          <!-- Right Arrow -->
+          <button class="carousel-nav-btn method-carousel-next" aria-label="Next scene">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Scene Indicators -->
+        <div class="carousel-indicators method-indicators">
+          <span class="carousel-dot active" data-index="0"></span>
+          <span class="carousel-dot" data-index="1"></span>
+          <span class="carousel-dot" data-index="2"></span>
+          <span class="carousel-dot" data-index="3"></span>
+          <span class="carousel-dot" data-index="4"></span>
+          <span class="carousel-dot" data-index="5"></span>
+        </div>
+      </div>
+    </div>
+    <!--/ Method Comparison. -->
+
+    <!-- Long Video Generation. -->
+    <div class="columns is-centered has-text-centered" style="margin-top: 3rem;">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Long Video Generation</h2>
+        <div class="content has-text-justified">
+          <p>
+            Our method can generate long driving videos with consistent quality. Compare different methods on a long driving sequence.
+          </p>
+        </div>
+
+        <!-- Method Selector for Long Video -->
+        <div class="method-selector-wrapper">
+          <label for="long-video-method-select" class="method-label">Compare with:</label>
+          <div class="select is-medium">
+            <select id="long-video-method-select">
+              <option value="dwd_process" selected>DwD (Ours)</option>
+              <option value="blur_result">Cosmos Transfer 2.5 Blur</option>
+              <option value="edge_process">Cosmos Transfer 2.5 Edge</option>
+              <option value="depth_result">Cosmos Transfer 2.5 Depth</option>
+              <option value="depth_edge_result">Cosmos Transfer 2.5 Depth+Edge</option>
+              <option value="seg_process">Cosmos Transfer 2.5 Seg</option>
+              <option value="seg_edge_result">Cosmos Transfer 2.5 Seg+Edge</option>
+              <option value="fresco_result">Fresco</option>
+              <option value="tclight_result">TCLight</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Long Video Comparison -->
+        <div class="long-video-comparison-wrapper">
+          <div class="video-comparison-container long-video-comparison-item">
+            <div class="video-comparison-wrapper">
+              <div class="video-comparison-item video-right">
+                <video autoplay muted loop playsinline>
+                  <source src="./assets/20260123-webvideo/dwd_process/1120_DV.mp4" type="video/mp4">
+                </video>
+              </div>
+              <div class="video-comparison-item video-left">
+                <video autoplay muted loop playsinline>
+                  <source src="./assets/20260123-webvideo/cg_process/1120_DV.mp4" type="video/mp4">
+                </video>
+              </div>
+              <div class="video-comparison-handle">
+                <div class="video-comparison-handle-circle">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+                    <path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z" transform="rotate(180 12 12)"/>
+                  </svg>
+                </div>
+              </div>
+              <div class="video-comparison-label label-left">Simulation</div>
+              <div class="video-comparison-label label-right long-video-label-right">DwD (Ours)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--/ Long Video Generation. -->
+
+    <!-- Zero-shot BEV Meshes. -->
+    <div class="columns is-centered has-text-centered" style="margin-top: 3rem;">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Zero-shot Result on Reconstructed Bird-Eye View Meshes</h2>
+        <div class="content has-text-justified">
+          <p>
+            Our method generalizes to novel viewpoints rendered from reconstructed bird-eye view meshes without any fine-tuning.
+          </p>
+        </div>
+
+        <!-- Stacked Videos -->
+        <div class="bev-videos-wrapper">
+          <div class="bev-video-item">
+            <div class="bev-video-label">Rendered BEV Mesh</div>
+            <video autoplay muted loop playsinline>
+              <source src="./assets/20260123-webvideo/extra_video/render_path2_clip.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div class="bev-video-item">
+            <div class="bev-video-label">DwD Output</div>
+            <video autoplay muted loop playsinline>
+              <source src="./assets/20260123-webvideo/extra_video/render_path2_clip_up4pca8.mp4" type="video/mp4">
+            </video>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--/ Zero-shot BEV Meshes. -->
+  </div>
+</section>
+
+
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>@article{park2021nerfies,
+  author    = {Park, Keunhong and Sinha, Utkarsh and Barron, Jonathan T. and Bouaziz, Sofien and Goldman, Dan B and Seitz, Steven M. and Martin-Brualla, Ricardo},
+  title     = {Nerfies: Deformable Neural Radiance Fields},
+  journal   = {ICCV},
+  year      = {2021},
+}</code></pre>
+  </div>
+</section>
+
+
+<footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+      <a class="icon-link" href="#">
+        <i class="fas fa-file-pdf"></i>
+      </a>
+      <a class="icon-link" href="#" class="external-link">
+        <i class="fab fa-github"></i>
+      </a>
+    </div>
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            This website is licensed under a <a rel="license"
+                                                href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
+            Commons Attribution-ShareAlike 4.0 International License</a>.
+          </p>
+          <p>
+            This means you are free to borrow the <a
+              href="https://github.com/nerfies/nerfies.github.io">source code</a> of this website,
+            we just ask that you link back to this page in the footer.
+            Please remember to remove the analytics code included in the header of the website which
+            you do not want on your website.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
