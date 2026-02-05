@@ -705,6 +705,73 @@ function initLongVideoComparison() {
   }
 }
 
+/**
+ * Image Carousel Component
+ */
+class ImageCarousel {
+  constructor(wrapperId, images) {
+    this.wrapper = document.getElementById(wrapperId);
+    if (!this.wrapper) return;
+
+    this.imageElement = this.wrapper.querySelector('.carousel-image');
+    this.prevBtn = this.wrapper.querySelector('.carousel-prev');
+    this.nextBtn = this.wrapper.querySelector('.carousel-next');
+
+    // Find the associated indicators container
+    this.indicatorsContainer = document.getElementById('chart-indicators');
+    this.dots = this.indicatorsContainer.querySelectorAll('.carousel-dot');
+
+    this.images = images;
+    this.currentIndex = 0;
+
+    this.init();
+  }
+
+  init() {
+    this.bindEvents();
+    this.updateImage();
+  }
+
+  bindEvents() {
+    this.prevBtn.addEventListener('click', () => this.prev());
+    this.nextBtn.addEventListener('click', () => this.next());
+
+    this.dots.forEach((dot, index) => {
+      dot.addEventListener('click', () => this.goTo(index));
+    });
+  }
+
+  prev() {
+    this.currentIndex = (this.currentIndex - 1 + this.images.length) % this.images.length;
+    this.updateImage();
+  }
+
+  next() {
+    this.currentIndex = (this.currentIndex + 1) % this.images.length;
+    this.updateImage();
+  }
+
+  goTo(index) {
+    if (index === this.currentIndex) return;
+    this.currentIndex = index;
+    this.updateImage();
+  }
+
+  updateImage() {
+    // Optional: Add fade effect
+    this.imageElement.style.opacity = '0.5';
+
+    setTimeout(() => {
+      this.imageElement.src = this.images[this.currentIndex];
+      this.imageElement.style.opacity = '1';
+    }, 150);
+
+    // Update dots
+    this.dots.forEach((dot, index) => {
+      dot.classList.toggle('active', index === this.currentIndex);
+    });
+  }
+}
 
 $(document).ready(function() {
     // Check for click events on the navbar burger icon
@@ -763,5 +830,15 @@ $(document).ready(function() {
     document.querySelectorAll('.bev-video-item video').forEach(video => {
       video.play().catch(e => console.log('BEV video play error:', e));
     });
+
+    // Initialize Chart Carousel
+    const chartImages = [
+      './static/images/charts/chart_01.png',
+      './static/images/charts/chart_02.png',
+      './static/images/charts/chart_03.png',
+      './static/images/charts/chart_04.png'
+    ];
+
+    new ImageCarousel('chart-carousel', chartImages);
 
 })
