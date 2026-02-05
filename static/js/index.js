@@ -9,7 +9,7 @@ class VideoComparisonSlider {
     this.videoRight = container.querySelector('.video-right video');
     this.videoLeftWrapper = container.querySelector('.video-left');
     this.handle = container.querySelector('.video-comparison-handle');
-    
+
     this.isDragging = false;
     this.position = 50;
     this.videosReady = 0;
@@ -17,14 +17,17 @@ class VideoComparisonSlider {
     this.leftLoaded = false;
     this.rightLoaded = false;
     this.initialized = false;
-    
+
+    // Add buffering state tracking
+    this.isBuffering = false;
+
     this.init();
   }
-  
+
   init() {
     this.bindEvents();
     this.updatePosition(50);
-    
+
     // 如果视频已经加载完成（缓存），手动触发
     if (this.videoLeft.readyState >= 1) {
       this.onVideoLoaded('left');
@@ -33,95 +36,153 @@ class VideoComparisonSlider {
       this.onVideoLoaded('right');
     }
   }
-  
+
+  // Resets the state of the slider, crucial for when video sources change
+  reset() {
+    this.videosReady = 0;
+    this.leftLoaded = false;
+    this.rightLoaded = false;
+    this.initialized = false;
+    this.isBuffering = false;
+
+    // Reset playback rates to default to avoid carry-over speed issues
+    this.videoLeft.playbackRate = 1;
+    this.videoRight.playbackRate = 1;
+
+    // Reset time and pause
+    this.videoLeft.currentTime = 0;
+    this.videoRight.currentTime = 0;
+    this.videoLeft.pause();
+    this.videoRight.pause();
+  }
+
   bindEvents() {
     // 滑块拖拽事件
     this.handle.addEventListener('mousedown', (e) => this.startDrag(e));
     this.handle.addEventListener('touchstart', (e) => this.startDrag(e), { passive: false });
-    
+
     document.addEventListener('mousemove', (e) => this.onDrag(e));
     document.addEventListener('touchmove', (e) => this.onDrag(e), { passive: false });
-    
+
     document.addEventListener('mouseup', () => this.endDrag());
     document.addEventListener('touchend', () => this.endDrag());
-    
+
     // 点击容器也可以移动滑块
     this.container.querySelector('.video-comparison-wrapper').addEventListener('click', (e) => {
       if (!this.isDragging) {
         this.moveToPosition(e);
       }
     });
-    
+
     // 视频加载完成
     this.videoLeft.addEventListener('loadedmetadata', () => this.onVideoLoaded('left'));
     this.videoRight.addEventListener('loadedmetadata', () => this.onVideoLoaded('right'));
-    
+
     // 循环播放处理
     this.videoLeft.addEventListener('ended', () => this.restart());
     this.videoRight.addEventListener('ended', () => {
       this.videoRight.currentTime = 0;
       this.videoRight.play();
     });
+
+    // ---------------------------------------------------------
+    // Enhanced Synchronization Logic (Buffering Sync Only)
+    // ---------------------------------------------------------
+
+    // 1. Buffering Sync: If either waits, both wait.
+    const onWaiting = () => {
+      if (!this.isBuffering) {
+        this.isBuffering = true;
+        this.videoLeft.pause();
+        this.videoRight.pause();
+        // console.log('Buffering detected, pausing both videos');
+      }
+    };
+
+    // 2. Resume Sync: Only play when both are ready.
+    const onCanPlay = () => {
+      if (this.isBuffering) {
+        // Check if both have enough data to move forward
+        const leftReady = this.videoLeft.readyState >= 3; // HAVE_FUTURE_DATA
+        const rightReady = this.videoRight.readyState >= 3;
+
+        if (leftReady && rightReady) {
+          this.isBuffering = false;
+          // Resume both videos together
+          this.videoLeft.play();
+          this.videoRight.play();
+          // console.log('Buffering resolving, resuming both videos');
+        }
+      }
+    };
+
+    this.videoLeft.addEventListener('waiting', onWaiting);
+    this.videoRight.addEventListener('waiting', onWaiting);
+
+    this.videoLeft.addEventListener('playing', onCanPlay);
+    this.videoRight.addEventListener('playing', onCanPlay);
+    this.videoLeft.addEventListener('canplay', onCanPlay);
+    this.videoRight.addEventListener('canplay', onCanPlay);
   }
-  
+
   startDrag(e) {
     e.preventDefault();
     this.isDragging = true;
     this.container.style.cursor = 'ew-resize';
   }
-  
+
   onDrag(e) {
     if (!this.isDragging) return;
     e.preventDefault();
-    
+
     const rect = this.container.getBoundingClientRect();
     const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
     let position = ((clientX - rect.left) / rect.width) * 100;
-    
+
     position = Math.max(5, Math.min(95, position));
     this.updatePosition(position);
   }
-  
+
   endDrag() {
     this.isDragging = false;
     this.container.style.cursor = '';
   }
-  
+
   moveToPosition(e) {
     const rect = this.container.getBoundingClientRect();
     let position = ((e.clientX - rect.left) / rect.width) * 100;
     position = Math.max(5, Math.min(95, position));
     this.updatePosition(position);
   }
-  
+
   updatePosition(position) {
     this.position = position;
     this.handle.style.left = position + '%';
     this.videoLeftWrapper.style.clipPath = `inset(0 ${100 - position}% 0 0)`;
   }
-  
+
   onVideoLoaded(which) {
     if (which === 'left' && this.leftLoaded) return;
     if (which === 'right' && this.rightLoaded) return;
-    
+
     if (which === 'left') this.leftLoaded = true;
     if (which === 'right') this.rightLoaded = true;
-    
+
     this.videosReady++;
-    
+
     if (this.videosReady >= 2 && !this.initialized) {
       this.initialized = true;
       this.syncVideoDurations();
       this.play();
     }
   }
-  
+
   syncVideoDurations() {
     const leftDuration = this.videoLeft.duration;
     const rightDuration = this.videoRight.duration;
-    
+
     this.masterDuration = Math.max(leftDuration, rightDuration);
-    
+
     if (leftDuration < rightDuration) {
       this.videoLeft.playbackRate = leftDuration / rightDuration;
       this.videoRight.playbackRate = 1;
@@ -133,15 +194,24 @@ class VideoComparisonSlider {
       this.videoRight.playbackRate = 1;
     }
   }
-  
+
   play() {
-    const normalizedTime = this.videoLeft.currentTime / this.videoLeft.playbackRate;
-    this.videoRight.currentTime = normalizedTime * this.videoRight.playbackRate;
-    
-    this.videoLeft.play();
-    this.videoRight.play();
+    // Only play if both are ready enough
+    if (this.videoLeft.readyState >= 2 && this.videoRight.readyState >= 2) {
+        // Use Promise.all to catch any auto-play restrictions
+        Promise.all([
+            this.videoLeft.play(),
+            this.videoRight.play()
+        ]).catch(e => {
+            console.log("Playback failed (possibly waiting for interaction):", e);
+        });
+    } else {
+        // Wait for them to be ready
+        this.isBuffering = true;
+        // The 'playing'/'canplay' listeners will handle the actual start
+    }
   }
-  
+
   restart() {
     this.videoLeft.currentTime = 0;
     this.videoRight.currentTime = 0;
@@ -156,6 +226,81 @@ function initVideoComparisonSliders() {
     new VideoComparisonSlider(container);
   });
 }
+
+
+/**
+ * 视频预加载器
+ * Video Preloader
+ * 负责在后台静默加载视频资源，利用浏览器缓存提升切换体验
+ */
+class VideoPreloader {
+  constructor() {
+    this.queue = [];
+    this.loaded = new Set();
+    this.isLoading = false;
+    this.isStarted = false;
+
+    // 初始化后延迟启动，等待前台视频加载
+    window.addEventListener('load', () => {
+      // 额外延迟3秒，确保页面主要交互已就绪
+      setTimeout(() => {
+        this.start();
+      }, 3000);
+    });
+  }
+
+  start() {
+    if (this.isStarted) return;
+    this.isStarted = true;
+    console.log('VideoPreloader: Started background preloading...');
+    this.checkQueue();
+  }
+
+  add(url) {
+    if (!url) return;
+    // 规范化URL（处理相对路径）
+    try {
+      const absoluteUrl = new URL(url, window.location.href).href;
+      if (!this.loaded.has(absoluteUrl) && !this.queue.includes(absoluteUrl)) {
+        this.queue.push(absoluteUrl);
+        // 如果已经启动，尝试处理队列
+        if (this.isStarted) {
+          this.checkQueue();
+        }
+      }
+    } catch (e) {
+      console.warn('Invalid URL for preloader:', url);
+    }
+  }
+
+  checkQueue() {
+    if (this.isLoading || this.queue.length === 0 || !this.isStarted) return;
+
+    this.isLoading = true;
+    const url = this.queue.shift();
+
+    // 使用 fetch 进行预加载
+    fetch(url)
+      .then(response => {
+        if (response.ok) {
+          this.loaded.add(url);
+          // console.log('Preloaded:', url);
+        }
+      })
+      .catch(err => {
+        // console.log('Preload failed (will retry later if needed):', url);
+      })
+      .finally(() => {
+        this.isLoading = false;
+        // 继续处理下一个，给主线程一点喘息时间
+        setTimeout(() => this.checkQueue(), 200);
+      });
+  }
+}
+
+// 全局预加载实例
+const videoPreloader = new VideoPreloader();
+
 
 /**
  * 视频对比轮播组件
@@ -188,11 +333,22 @@ class VideoComparisonCarousel {
     };
 
     this.init();
+
+    // 注册视频到预加载器
+    this.registerVideos();
   }
 
   init() {
     this.bindEvents();
     this.loadVideoPair(0);
+  }
+
+  registerVideos() {
+    this.videoPairs.forEach(pair => {
+      // 略过当前正在播放的（currentIndex），虽然预加载器有去重，但为了逻辑清晰
+      videoPreloader.add(this.basePath.cg + pair.cg);
+      videoPreloader.add(this.basePath.dwd + pair.dwd);
+    });
   }
 
   bindEvents() {
@@ -246,11 +402,7 @@ class VideoComparisonCarousel {
 
     // 重新初始化滑块
     if (this.slider) {
-      // 重置状态
-      this.slider.videosReady = 0;
-      this.slider.leftLoaded = false;
-      this.slider.rightLoaded = false;
-      this.slider.initialized = false;
+      this.slider.reset();
     } else {
       this.slider = new VideoComparisonSlider(this.container);
     }
@@ -316,11 +468,30 @@ class MethodComparisonCarousel {
     this.basePath = './assets/20260123-webvideo/';
 
     this.init();
+
+    // 注册视频到预加载器
+    this.registerVideos();
   }
 
   init() {
     this.bindEvents();
     this.loadVideo();
+  }
+
+  registerVideos() {
+    const methods = Object.keys(this.methodNames);
+
+    this.scenes.forEach(scene => {
+      // 1. 左侧视频 (CG Process) - 每个场景只需要一个
+      videoPreloader.add(this.basePath + 'cg_process/' + scene);
+
+      // 2. 右侧视频 - 每个场景可能有多种方法
+      // 注意：这里可能会产生大量请求，预加载器会串行处理，不会卡死浏览器
+      methods.forEach(method => {
+        const methodFileName = this.getFileName(method, scene);
+        videoPreloader.add(this.basePath + method + '/' + methodFileName);
+      });
+    });
   }
 
   bindEvents() {
@@ -397,10 +568,7 @@ class MethodComparisonCarousel {
 
     // 重新初始化滑块
     if (this.slider) {
-      this.slider.videosReady = 0;
-      this.slider.leftLoaded = false;
-      this.slider.rightLoaded = false;
-      this.slider.initialized = false;
+      this.slider.reset();
     } else {
       this.slider = new VideoComparisonSlider(this.container);
     }
@@ -458,6 +626,9 @@ class LongVideoComparison {
     this.basePath = './assets/20260123-webvideo/';
 
     this.init();
+
+    // 注册视频到预加载器
+    this.registerVideos();
   }
 
   init() {
@@ -466,11 +637,19 @@ class LongVideoComparison {
     this.slider = new VideoComparisonSlider(this.container);
     this.updateLabel();
 
-    // 确保视频开始播放
-    const videoLeft = this.container.querySelector('.video-left video');
-    const videoRight = this.container.querySelector('.video-right video');
-    videoLeft.play().catch(e => console.log('Video play error:', e));
-    videoRight.play().catch(e => console.log('Video play error:', e));
+    // REMOVED: Manual video.play() calls.
+    // Now relying on VideoComparisonSlider's internal logic.
+  }
+
+  registerVideos() {
+    // 1. 左侧视频 (固定)
+    videoPreloader.add(this.basePath + 'cg_process/1120_DV.mp4');
+
+    // 2. 右侧视频 (所有方法)
+    Object.keys(this.methodNames).forEach(method => {
+      const fileName = this.fileNames[method] || '1120_DV.mp4';
+      videoPreloader.add(this.basePath + method + '/' + fileName);
+    });
   }
 
   bindEvents() {
@@ -506,29 +685,12 @@ class LongVideoComparison {
     // 更新标签
     this.updateLabel();
 
-    // 确保视频加载完成后自动播放
-    const playWhenReady = (video) => {
-      const tryPlay = () => {
-        video.play().catch(e => console.log('Video play failed:', e));
-      };
-      if (video.readyState >= 3) {
-        tryPlay();
-      } else {
-        video.addEventListener('canplay', tryPlay, { once: true });
-      }
-    };
-    playWhenReady(videoLeft);
-    playWhenReady(videoRight);
+    // REMOVED: Manual playWhenReady logic.
+    // VideoComparisonSlider will handle playback when metadata loads.
 
     // 重新初始化滑块
     if (this.slider) {
-      this.slider.videosReady = 0;
-      this.slider.leftLoaded = false;
-      this.slider.rightLoaded = false;
-      this.slider.initialized = false;
-      // 重新绑定视频引用
-      this.slider.videoLeft = videoLeft;
-      this.slider.videoRight = videoRight;
+      this.slider.reset();
     } else {
       this.slider = new VideoComparisonSlider(this.container);
     }
@@ -543,6 +705,73 @@ function initLongVideoComparison() {
   }
 }
 
+/**
+ * Image Carousel Component
+ */
+class ImageCarousel {
+  constructor(wrapperId, images) {
+    this.wrapper = document.getElementById(wrapperId);
+    if (!this.wrapper) return;
+
+    this.imageElement = this.wrapper.querySelector('.carousel-image');
+    this.prevBtn = this.wrapper.querySelector('.carousel-prev');
+    this.nextBtn = this.wrapper.querySelector('.carousel-next');
+
+    // Find the associated indicators container
+    this.indicatorsContainer = document.getElementById('chart-indicators');
+    this.dots = this.indicatorsContainer.querySelectorAll('.carousel-dot');
+
+    this.images = images;
+    this.currentIndex = 0;
+
+    this.init();
+  }
+
+  init() {
+    this.bindEvents();
+    this.updateImage();
+  }
+
+  bindEvents() {
+    this.prevBtn.addEventListener('click', () => this.prev());
+    this.nextBtn.addEventListener('click', () => this.next());
+
+    this.dots.forEach((dot, index) => {
+      dot.addEventListener('click', () => this.goTo(index));
+    });
+  }
+
+  prev() {
+    this.currentIndex = (this.currentIndex - 1 + this.images.length) % this.images.length;
+    this.updateImage();
+  }
+
+  next() {
+    this.currentIndex = (this.currentIndex + 1) % this.images.length;
+    this.updateImage();
+  }
+
+  goTo(index) {
+    if (index === this.currentIndex) return;
+    this.currentIndex = index;
+    this.updateImage();
+  }
+
+  updateImage() {
+    // Optional: Add fade effect
+    this.imageElement.style.opacity = '0.5';
+
+    setTimeout(() => {
+      this.imageElement.src = this.images[this.currentIndex];
+      this.imageElement.style.opacity = '1';
+    }, 150);
+
+    // Update dots
+    this.dots.forEach((dot, index) => {
+      dot.classList.toggle('active', index === this.currentIndex);
+    });
+  }
+}
 
 $(document).ready(function() {
     // Check for click events on the navbar burger icon
@@ -625,5 +854,15 @@ $(document).ready(function() {
         }
       });
     }
+
+    // Initialize Chart Carousel
+    const chartImages = [
+      './static/images/charts/chart_01.png',
+      './static/images/charts/chart_02.png',
+      './static/images/charts/chart_03.png',
+      './static/images/charts/chart_04.png'
+    ];
+
+    new ImageCarousel('chart-carousel', chartImages);
 
 })
