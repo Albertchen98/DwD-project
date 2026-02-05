@@ -625,11 +625,8 @@ class LongVideoComparison {
     this.slider = new VideoComparisonSlider(this.container);
     this.updateLabel();
 
-    // 确保视频开始播放
-    const videoLeft = this.container.querySelector('.video-left video');
-    const videoRight = this.container.querySelector('.video-right video');
-    videoLeft.play().catch(e => console.log('Video play error:', e));
-    videoRight.play().catch(e => console.log('Video play error:', e));
+    // REMOVED: Manual video.play() calls.
+    // Now relying on VideoComparisonSlider's internal logic.
   }
 
   registerVideos() {
@@ -676,19 +673,8 @@ class LongVideoComparison {
     // 更新标签
     this.updateLabel();
 
-    // 确保视频加载完成后自动播放
-    const playWhenReady = (video) => {
-      const tryPlay = () => {
-        video.play().catch(e => console.log('Video play failed:', e));
-      };
-      if (video.readyState >= 3) {
-        tryPlay();
-      } else {
-        video.addEventListener('canplay', tryPlay, { once: true });
-      }
-    };
-    playWhenReady(videoLeft);
-    playWhenReady(videoRight);
+    // REMOVED: Manual playWhenReady logic.
+    // VideoComparisonSlider will handle playback when metadata loads.
 
     // 重新初始化滑块
     if (this.slider) {
