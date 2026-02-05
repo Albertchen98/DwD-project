@@ -597,9 +597,33 @@ $(document).ready(function() {
     // 初始化长视频对比组件
     initLongVideoComparison();
 
-    // 确保BEV视频播放
-    document.querySelectorAll('.bev-video-item video').forEach(video => {
-      video.play().catch(e => console.log('BEV video play error:', e));
-    });
+    // 同步BEV视频播放
+    const bevVideoLeft = document.querySelector('.bev-video-left');
+    const bevVideoRight = document.querySelector('.bev-video-right');
+    
+    if (bevVideoLeft && bevVideoRight) {
+      let bothReady = false;
+      
+      const tryPlayBoth = () => {
+        if (bevVideoLeft.readyState >= 3 && bevVideoRight.readyState >= 3) {
+          if (!bothReady) {
+            bothReady = true;
+            // 同时播放两个视频
+            bevVideoLeft.play().catch(e => console.log('BEV left video play error:', e));
+            bevVideoRight.play().catch(e => console.log('BEV right video play error:', e));
+          }
+        }
+      };
+      
+      bevVideoLeft.addEventListener('canplay', tryPlayBoth);
+      bevVideoRight.addEventListener('canplay', tryPlayBoth);
+      
+      // 保持视频同步
+      bevVideoLeft.addEventListener('play', () => {
+        if (Math.abs(bevVideoLeft.currentTime - bevVideoRight.currentTime) > 0.1) {
+          bevVideoRight.currentTime = bevVideoLeft.currentTime;
+        }
+      });
+    }
 
 })
