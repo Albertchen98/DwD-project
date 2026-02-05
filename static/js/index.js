@@ -229,43 +229,48 @@ function initVideoComparisonSliders() {
 
 
 /**
- * 视频预加载器
+ * 视频预加载器 (改进版 - 立即并行预加载)
  * Video Preloader
- * 负责在后台静默加载视频资源，利用浏览器缓存提升切换体验
+ * 使用隐藏的 video 元素进行预加载，确保视频被缓存到浏览器媒体缓存
  */
 class VideoPreloader {
   constructor() {
     this.queue = [];
     this.loaded = new Set();
-    this.isLoading = false;
+    this.loading = new Set();
     this.isStarted = false;
+    this.maxConcurrent = 4; // 最多同时预加载4个视频
+    this.preloadContainer = null;
 
-    // 初始化后延迟启动，等待前台视频加载
-    window.addEventListener('load', () => {
-      // 额外延迟3秒，确保页面主要交互已就绪
-      setTimeout(() => {
-        this.start();
-      }, 3000);
-    });
+    // 页面加载后立即开始预加载
+    if (document.readyState === 'complete') {
+      this.start();
+    } else {
+      window.addEventListener('load', () => this.start());
+    }
   }
 
   start() {
     if (this.isStarted) return;
     this.isStarted = true;
-    console.log('VideoPreloader: Started background preloading...');
-    this.checkQueue();
+
+    // 创建隐藏的容器用于放置预加载的 video 元素
+    this.preloadContainer = document.createElement('div');
+    this.preloadContainer.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden;visibility:hidden;';
+    document.body.appendChild(this.preloadContainer);
+
+    console.log('VideoPreloader: Started immediate parallel preloading...');
+    this.processQueue();
   }
 
   add(url) {
     if (!url) return;
-    // 规范化URL（处理相对路径）
     try {
       const absoluteUrl = new URL(url, window.location.href).href;
-      if (!this.loaded.has(absoluteUrl) && !this.queue.includes(absoluteUrl)) {
+      if (!this.loaded.has(absoluteUrl) && !this.loading.has(absoluteUrl) && !this.queue.includes(absoluteUrl)) {
         this.queue.push(absoluteUrl);
-        // 如果已经启动，尝试处理队列
         if (this.isStarted) {
-          this.checkQueue();
+          this.processQueue();
         }
       }
     } catch (e) {
@@ -273,28 +278,54 @@ class VideoPreloader {
     }
   }
 
-  checkQueue() {
-    if (this.isLoading || this.queue.length === 0 || !this.isStarted) return;
+  processQueue() {
+    // 填满并行加载槽位
+    while (this.loading.size < this.maxConcurrent && this.queue.length > 0) {
+      const url = this.queue.shift();
+      this.preloadVideo(url);
+    }
+  }
 
-    this.isLoading = true;
-    const url = this.queue.shift();
+  preloadVideo(url) {
+    this.loading.add(url);
 
-    // 使用 fetch 进行预加载
-    fetch(url)
-      .then(response => {
-        if (response.ok) {
-          this.loaded.add(url);
-          // console.log('Preloaded:', url);
+    const video = document.createElement('video');
+    video.preload = 'auto';
+    video.muted = true;
+    video.playsInline = true;
+
+    const onComplete = () => {
+      this.loading.delete(url);
+      this.loaded.add(url);
+      // 移除 video 元素释放内存，但浏览器会保留缓存
+      setTimeout(() => {
+        if (video.parentNode) {
+          video.parentNode.removeChild(video);
         }
-      })
-      .catch(err => {
-        // console.log('Preload failed (will retry later if needed):', url);
-      })
-      .finally(() => {
-        this.isLoading = false;
-        // 继续处理下一个，给主线程一点喘息时间
-        setTimeout(() => this.checkQueue(), 200);
-      });
+      }, 1000);
+      this.processQueue();
+    };
+
+    const onError = () => {
+      this.loading.delete(url);
+      this.processQueue();
+    };
+
+    video.addEventListener('canplaythrough', onComplete, { once: true });
+    video.addEventListener('error', onError, { once: true });
+
+    // 设置超时，防止卡住
+    setTimeout(() => {
+      if (this.loading.has(url)) {
+        this.loading.delete(url);
+        this.loaded.add(url); // 即使超时也标记为已加载，避免重复
+        this.processQueue();
+      }
+    }, 30000);
+
+    video.src = url;
+    this.preloadContainer.appendChild(video);
+    video.load();
   }
 }
 
