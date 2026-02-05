@@ -37,6 +37,25 @@ class VideoComparisonSlider {
     }
   }
 
+  // Resets the state of the slider, crucial for when video sources change
+  reset() {
+    this.videosReady = 0;
+    this.leftLoaded = false;
+    this.rightLoaded = false;
+    this.initialized = false;
+    this.isBuffering = false;
+
+    // Reset playback rates to default to avoid carry-over speed issues
+    this.videoLeft.playbackRate = 1;
+    this.videoRight.playbackRate = 1;
+
+    // Reset time and pause
+    this.videoLeft.currentTime = 0;
+    this.videoRight.currentTime = 0;
+    this.videoLeft.pause();
+    this.videoRight.pause();
+  }
+
   bindEvents() {
     // 滑块拖拽事件
     this.handle.addEventListener('mousedown', (e) => this.startDrag(e));
@@ -383,11 +402,7 @@ class VideoComparisonCarousel {
 
     // 重新初始化滑块
     if (this.slider) {
-      // 重置状态
-      this.slider.videosReady = 0;
-      this.slider.leftLoaded = false;
-      this.slider.rightLoaded = false;
-      this.slider.initialized = false;
+      this.slider.reset();
     } else {
       this.slider = new VideoComparisonSlider(this.container);
     }
@@ -553,10 +568,7 @@ class MethodComparisonCarousel {
 
     // 重新初始化滑块
     if (this.slider) {
-      this.slider.videosReady = 0;
-      this.slider.leftLoaded = false;
-      this.slider.rightLoaded = false;
-      this.slider.initialized = false;
+      this.slider.reset();
     } else {
       this.slider = new VideoComparisonSlider(this.container);
     }
@@ -678,13 +690,7 @@ class LongVideoComparison {
 
     // 重新初始化滑块
     if (this.slider) {
-      this.slider.videosReady = 0;
-      this.slider.leftLoaded = false;
-      this.slider.rightLoaded = false;
-      this.slider.initialized = false;
-      // 重新绑定视频引用
-      this.slider.videoLeft = videoLeft;
-      this.slider.videoRight = videoRight;
+      this.slider.reset();
     } else {
       this.slider = new VideoComparisonSlider(this.container);
     }
