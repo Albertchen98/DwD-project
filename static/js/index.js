@@ -67,7 +67,7 @@ class VideoComparisonSlider {
     });
 
     // ---------------------------------------------------------
-    // Enhanced Synchronization Logic (Buffering & Drift Check)
+    // Enhanced Synchronization Logic (Buffering Sync Only)
     // ---------------------------------------------------------
 
     // 1. Buffering Sync: If either waits, both wait.
@@ -89,8 +89,7 @@ class VideoComparisonSlider {
 
         if (leftReady && rightReady) {
           this.isBuffering = false;
-          // Sync timestamps before resuming to prevent jump cuts
-          this.syncCurrentTime();
+          // Resume both videos together
           this.videoLeft.play();
           this.videoRight.play();
           // console.log('Buffering resolving, resuming both videos');
@@ -105,19 +104,6 @@ class VideoComparisonSlider {
     this.videoRight.addEventListener('playing', onCanPlay);
     this.videoLeft.addEventListener('canplay', onCanPlay);
     this.videoRight.addEventListener('canplay', onCanPlay);
-
-    // 3. Periodic Drift Correction
-    // Check synchronization every time the master video updates time
-    this.videoLeft.addEventListener('timeupdate', () => {
-      if (this.isBuffering || this.videoLeft.paused) return;
-
-      const diff = Math.abs(this.videoLeft.currentTime - this.videoRight.currentTime);
-      // If drift is > 0.15s, snap right video to left video
-      if (diff > 0.15) {
-        // console.log(`Drift detected: ${diff.toFixed(3)}s. Syncing...`);
-        this.videoRight.currentTime = this.videoLeft.currentTime;
-      }
-    });
   }
 
   startDrag(e) {
@@ -190,20 +176,9 @@ class VideoComparisonSlider {
     }
   }
 
-  // Helper to align times (accounting for playbackRate if we were using it for speed,
-  // but here we just want absolute alignment for visual sync)
-  syncCurrentTime() {
-     // Use left video as master time source
-     if (Math.abs(this.videoRight.currentTime - this.videoLeft.currentTime) > 0.1) {
-         this.videoRight.currentTime = this.videoLeft.currentTime;
-     }
-  }
-
   play() {
     // Only play if both are ready enough
     if (this.videoLeft.readyState >= 2 && this.videoRight.readyState >= 2) {
-        this.syncCurrentTime();
-
         // Use Promise.all to catch any auto-play restrictions
         Promise.all([
             this.videoLeft.play(),
