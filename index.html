@@ -63,7 +63,7 @@
     <div class="container is-max-desktop">
       <div class="columns is-centered">
         <div class="column has-text-centered">
-          <h1 class="title is-1 publication-title">Driving with DINO: Vision Foundation Features as a Unified Bridge for Sim-to-Real Generation in Autonomous Driving</h1>
+          <h1 class="title is-1 publication-title"><span style="background: linear-gradient(90deg, #ff0000, #ff8c00, #ffd700, #00c853, #2979ff, #7c4dff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Driving with DINO</span>: Vision Foundation Features as a Unified Bridge for Sim-to-Real Generation in Autonomous Driving</h1>
           <div class="is-size-5 publication-authors">
             <span class="author-block">Xuyang Chen<sup>1,2*</sup>,</span>
             <span class="author-block">Conglang Zhang<sup>3,4*</sup>,</span>
@@ -236,7 +236,7 @@
         <div class="content">
           <img src="./static/images/mainfigurev2.png" alt="DwD Method Overview" style="width: 100%;">
           <p class="has-text-justified" style="font-size: 0.95rem; color: #555; margin-top: 10px;">
-            <strong>Figure:</strong> The framework of DwD. (a) <em>Training</em>: The model is trained on real-world driving videos using a controllable diffusion architecture. The core module, VFM-Prism, processes DINOv3 features through Spatial Resolution Enhancement, Minor Components Pruning, and Causal Temporal Aggregation. These refined features are injected via a Control Branch to guide the reconstruction of the original video. (b) <em>Inference</em>: The model performs Sim-to-Real translation using synthetic inputs. By leveraging the domain-invariant structural features extracted by VFM-Prism (specifically via PCA-based pruning to mitigate texture leakage), DwD generates high-fidelity photorealistic videos that strictly preserve the simulation's geometric layout.
+            The framework of DwD. (a) <em>Training</em>: The model is trained on real-world driving videos using a controllable diffusion architecture. The core module, VFM-Prism, processes DINOv3 features through Spatial Resolution Enhancement, Minor Components Pruning, and Causal Temporal Aggregation. These refined features are injected via a Control Branch to guide the reconstruction of the original video. (b) <em>Inference</em>: The model performs Sim-to-Real translation using synthetic inputs. By leveraging the domain-invariant structural features extracted by VFM-Prism (specifically via PCA-based pruning to mitigate texture leakage), DwD generates high-fidelity photorealistic videos that strictly preserve the simulation's geometric layout.
           </p>
         </div>
       </div>
@@ -426,7 +426,7 @@
         <h2 class="title is-3">Qualitative Comparison Charts</h2>
         <div class="content has-text-justified">
           <p>
-            Detailed visual comparisons of our method against baselines across different scenarios.
+            Extra qualitative comparison with state-of-the-art methods. The <span style="color: #e74c3c; font-weight: 600;">red boxes</span> highlight <span style="color: #e74c3c; font-weight: 600;">inconsistencies</span> with respect to the CG input, while the <span style="color: #27ae60; font-weight: 600;">green boxes</span> point out <span style="color: #27ae60; font-weight: 600;">low-fidelity textures</span>.
           </p>
         </div>
 
