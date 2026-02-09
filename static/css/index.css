@@ -529,6 +529,7 @@ body {
 }
 
 .image-display-container {
+  position: relative;
   flex: 1;
   max-width: 100%;
   border-radius: 12px;
@@ -536,6 +537,32 @@ body {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   background: #fff;
   line-height: 0; /* Removes bottom gap for images */
+}
+
+.carousel-loading-spinner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.85);
+  z-index: 10;
+}
+
+.carousel-loading-spinner .spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e0e0e0;
+  border-top-color: #667eea;
+  border-radius: 50%;
+  animation: carousel-spin 0.8s linear infinite;
+}
+
+@keyframes carousel-spin {
+  to { transform: rotate(360deg); }
 }
 
 .carousel-image {

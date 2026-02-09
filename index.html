@@ -98,7 +98,7 @@
             <div class="publication-links">
               <!-- arXiv Link. -->
               <span class="link-block">
-                <a href="#"
+                <a href="https://arxiv.org/abs/2602.06159"
                    class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
                       <i class="ai ai-arxiv"></i>
@@ -235,6 +235,9 @@
         <h2 class="title is-3">Method Overview</h2>
         <div class="content">
           <img src="./static/images/mainfigurev2.png" alt="DwD Method Overview" style="width: 100%;">
+          <p class="has-text-justified" style="font-size: 0.95rem; color: #555; margin-top: 10px;">
+            <strong>Figure:</strong> The framework of DwD. (a) <em>Training</em>: The model is trained on real-world driving videos using a controllable diffusion architecture. The core module, VFM-Prism, processes DINOv3 features through Spatial Resolution Enhancement, Minor Components Pruning, and Causal Temporal Aggregation. These refined features are injected via a Control Branch to guide the reconstruction of the original video. (b) <em>Inference</em>: The model performs Sim-to-Real translation using synthetic inputs. By leveraging the domain-invariant structural features extracted by VFM-Prism (specifically via PCA-based pruning to mitigate texture leakage), DwD generates high-fidelity photorealistic videos that strictly preserve the simulation's geometric layout.
+          </p>
         </div>
       </div>
     </div>
@@ -358,12 +361,12 @@
           <div class="video-comparison-container long-video-comparison-item">
             <div class="video-comparison-wrapper">
               <div class="video-comparison-item video-right">
-                <video autoplay muted loop playsinline>
+                <video muted loop playsinline>
                   <source src="./assets/20260123-webvideo/dwd_process/1120_DV.mp4" type="video/mp4">
                 </video>
               </div>
               <div class="video-comparison-item video-left">
-                <video autoplay muted loop playsinline>
+                <video muted loop playsinline>
                   <source src="./assets/20260123-webvideo/cg_process/1120_DV.mp4" type="video/mp4">
                 </video>
               </div>
@@ -437,6 +440,9 @@
 
           <!-- Image Container -->
           <div class="image-display-container">
+            <div class="carousel-loading-spinner" style="display:none;">
+              <div class="spinner"></div>
+            </div>
             <img src="./static/images/charts/chart_01.png" alt="Comparison Chart" class="carousel-image">
           </div>
 
@@ -454,7 +460,6 @@
           <span class="carousel-dot" data-index="1"></span>
           <span class="carousel-dot" data-index="2"></span>
           <span class="carousel-dot" data-index="3"></span>
-          <span class="carousel-dot" data-index="4"></span>
         </div>
       </div>
     </div>
@@ -466,7 +471,12 @@
 <section class="section" id="BibTeX">
   <div class="container is-max-desktop content">
     <h2 class="title">BibTeX</h2>
-    <pre><code>Coming soon.</code></pre>
+    <pre><code>@article{chen2026dwd,
+  title={Driving with DINO: Vision Foundation Features as a Unified Bridge for Sim-to-Real Generation in Autonomous Driving},
+  author={Chen, Xuyang and Zhang, Conglang and Fu, Chuanheng and Yang, Zihao and Zhou, Kaixuan and Zhang, Yizhi and He, Jianan and Zhang, Yanfeng and Sun, Mingwei and Wang, Zengmao and Dong, Zhen and Long, Xiaoxiao and Meng, Liqiu},
+  journal={arXiv preprint arXiv:2602.06159},
+  year={2026}
+}</code></pre>
   </div>
 </section>
 

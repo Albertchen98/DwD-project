@@ -25,14 +25,18 @@ class VideoComparisonSlider {
   }
 
   init() {
+    // Ensure videos don't play until both are ready
+    this.videoLeft.pause();
+    this.videoRight.pause();
+
     this.bindEvents();
     this.updatePosition(50);
 
     // 如果视频已经加载完成（缓存），手动触发
-    if (this.videoLeft.readyState >= 1) {
+    if (this.videoLeft.readyState >= 3) {
       this.onVideoLoaded('left');
     }
-    if (this.videoRight.readyState >= 1) {
+    if (this.videoRight.readyState >= 3) {
       this.onVideoLoaded('right');
     }
   }
@@ -74,9 +78,9 @@ class VideoComparisonSlider {
       }
     });
 
-    // 视频加载完成
-    this.videoLeft.addEventListener('loadedmetadata', () => this.onVideoLoaded('left'));
-    this.videoRight.addEventListener('loadedmetadata', () => this.onVideoLoaded('right'));
+    // 视频加载完成 - 使用 canplay 确保有足够数据再播放
+    this.videoLeft.addEventListener('canplay', () => this.onVideoLoaded('left'));
+    this.videoRight.addEventListener('canplay', () => this.onVideoLoaded('right'));
 
     // 循环播放处理
     this.videoLeft.addEventListener('ended', () => this.restart());
@@ -196,8 +200,8 @@ class VideoComparisonSlider {
   }
 
   play() {
-    // Only play if both are ready enough
-    if (this.videoLeft.readyState >= 2 && this.videoRight.readyState >= 2) {
+    // Only play if both have enough future data (HAVE_FUTURE_DATA)
+    if (this.videoLeft.readyState >= 3 && this.videoRight.readyState >= 3) {
         // Use Promise.all to catch any auto-play restrictions
         Promise.all([
             this.videoLeft.play(),
@@ -745,6 +749,7 @@ class ImageCarousel {
     if (!this.wrapper) return;
 
     this.imageElement = this.wrapper.querySelector('.carousel-image');
+    this.loadingSpinner = this.wrapper.querySelector('.carousel-loading-spinner');
     this.prevBtn = this.wrapper.querySelector('.carousel-prev');
     this.nextBtn = this.wrapper.querySelector('.carousel-next');
 
@@ -760,7 +765,15 @@ class ImageCarousel {
 
   init() {
     this.bindEvents();
-    this.updateImage();
+    this.preloadImages();
+    this.updateDots();
+  }
+
+  preloadImages() {
+    this.images.forEach(src => {
+      const img = new Image();
+      img.src = src;
+    });
   }
 
   bindEvents() {
@@ -789,15 +802,25 @@ class ImageCarousel {
   }
 
   updateImage() {
-    // Optional: Add fade effect
-    this.imageElement.style.opacity = '0.5';
+    const newSrc = this.images[this.currentIndex];
 
-    setTimeout(() => {
-      this.imageElement.src = this.images[this.currentIndex];
+    // Hide old image and show spinner
+    this.imageElement.style.opacity = '0';
+    this.loadingSpinner.style.display = 'flex';
+
+    const newImg = new Image();
+    newImg.onload = () => {
+      this.imageElement.src = newSrc;
+      this.loadingSpinner.style.display = 'none';
       this.imageElement.style.opacity = '1';
-    }, 150);
+    };
+    newImg.src = newSrc;
 
-    // Update dots
+    // If already cached, onload fires synchronously or very fast
+    this.updateDots();
+  }
+
+  updateDots() {
     this.dots.forEach((dot, index) => {
       dot.classList.toggle('active', index === this.currentIndex);
     });
