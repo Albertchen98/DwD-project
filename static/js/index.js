@@ -900,7 +900,10 @@ $(document).ready(function() {
       
       bevVideoLeft.addEventListener('canplay', tryPlayBoth);
       bevVideoRight.addEventListener('canplay', tryPlayBoth);
-      
+
+      // 如果视频已经加载完成（缓存），立即尝试播放
+      tryPlayBoth();
+
       // 保持视频同步
       bevVideoLeft.addEventListener('play', () => {
         if (Math.abs(bevVideoLeft.currentTime - bevVideoRight.currentTime) > 0.1) {
