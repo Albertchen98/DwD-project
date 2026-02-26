@@ -7,8 +7,7 @@ dist/
 # Claude Code internal directory
 .claude/
 
-# Video assets (too large for git)
-public/assets/20260123-webvideo/
+# Video zip archive (421MB, exceeds GitHub 100MB per-file limit)
 public/assets/20260123-webvideo.zip
 
 # OS / editor
