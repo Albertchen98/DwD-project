@@ -11,7 +11,7 @@ export function TeaserSection() {
           transition={{ duration: 0.7 }}
         >
           <img
-            src="/static/images/teaser_figurev4-1.png"
+            src={`${import.meta.env.BASE_URL}static/images/teaser_figurev4-1.png`}
             alt="DwD Teaser Figure"
             className="w-full rounded-2xl"
             style={{ boxShadow: '0 8px 48px rgba(0,0,0,0.5)' }}

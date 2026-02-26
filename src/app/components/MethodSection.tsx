@@ -52,7 +52,7 @@ export function MethodSection() {
         >
           <div className="rounded-2xl overflow-hidden border border-white/[0.06]">
             <img
-              src="/static/images/mainfigurev2.png"
+              src={`${import.meta.env.BASE_URL}static/images/mainfigurev2.png`}
               alt="DwD Method Overview"
               className="w-full"
             />

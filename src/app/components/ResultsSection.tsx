@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { VideoComparisonSlider } from './VideoComparisonSlider';
 
-const BASE = '/assets/20260123-webvideo/';
+const BASE = `${import.meta.env.BASE_URL}assets/20260123-webvideo/`;
 const CG = `${BASE}cg_process/`;
 
 const SCENES = [
@@ -49,10 +49,10 @@ const LONG_VIDEO_FILES: Record<string, string> = {
 };
 
 const CHART_IMAGES = [
-  '/static/images/charts/chart_01.png',
-  '/static/images/charts/chart_02.png',
-  '/static/images/charts/chart_03.png',
-  '/static/images/charts/chart_04.png',
+  `${import.meta.env.BASE_URL}static/images/charts/chart_01.png`,
+  `${import.meta.env.BASE_URL}static/images/charts/chart_02.png`,
+  `${import.meta.env.BASE_URL}static/images/charts/chart_03.png`,
+  `${import.meta.env.BASE_URL}static/images/charts/chart_04.png`,
 ];
 
 function getDwdFile(scene: string) {
