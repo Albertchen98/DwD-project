@@ -4,7 +4,7 @@ import { ExternalLink } from 'lucide-react';
 const authors = [
   { name: 'Xuyang Chen', sup: '1,2*', affiliation: 'TU Munich / Huawei Hilbert' },
   { name: 'Conglang Zhang', sup: '3,4*', affiliation: 'Huawei Riemann Lab / Wuhan Univ.' },
-  { name: 'Chuanheng Fu', sup: '3,4', affiliation: 'Huawei Riemann Lab / Wuhan Univ.' },
+  { name: 'Chuanheng Fu', sup: '3,4*', affiliation: 'Huawei Riemann Lab / Wuhan Univ.' },
   { name: 'Zihao Yang', sup: '5', affiliation: 'USTC' },
   { name: 'Kaixuan Zhou', sup: '3†', affiliation: 'Huawei Riemann Lab', highlight: true },
   { name: 'Yizhi Zhang', sup: '3', affiliation: 'Huawei Riemann Lab' },

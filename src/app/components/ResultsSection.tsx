@@ -111,7 +111,7 @@ function SimToRealCarousel() {
 
 // ─── Triple Video Comparison ────────────────────────────────────────────────
 // Layout: CG simulation on the left, DwD (top-right) vs method (bottom-right)
-// Two drag handles: horizontal divider (CG vs right) and vertical divider (DwD vs method)
+// One drag handle at the divider intersection controls both axes.
 function TripleVideoComparison({
   cgSrc,
   dwdSrc,
@@ -129,7 +129,7 @@ function TripleVideoComparison({
   const methodRef = useRef<HTMLVideoElement>(null);
   const [hPos, setHPos] = useState(50); // left/right divider (CG vs right side)
   const [vPos, setVPos] = useState(50); // top/bottom divider (DwD vs method, right side)
-  const draggingRef = useRef<'h' | 'v' | null>(null);
+  const draggingRef = useRef(false);
 
   // Load all three videos; start only when all are buffered for frame alignment
   useEffect(() => {
@@ -195,26 +195,23 @@ function TripleVideoComparison({
 
   // Global drag handlers
   useEffect(() => {
+    const updateDragPosition = (clientX: number, clientY: number) => {
+      if (!containerRef.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      setHPos(Math.max(0, Math.min(100, ((clientX - rect.left) / rect.width) * 100)));
+      setVPos(Math.max(0, Math.min(100, ((clientY - rect.top) / rect.height) * 100)));
+    };
+
     const onMouseMove = (e: MouseEvent) => {
       if (!draggingRef.current || !containerRef.current) return;
-      const rect = containerRef.current.getBoundingClientRect();
-      if (draggingRef.current === 'h') {
-        setHPos(Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100)));
-      } else {
-        setVPos(Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100)));
-      }
+      updateDragPosition(e.clientX, e.clientY);
     };
     const onTouchMove = (e: TouchEvent) => {
       if (!draggingRef.current || !containerRef.current) return;
       e.preventDefault();
-      const rect = containerRef.current.getBoundingClientRect();
-      if (draggingRef.current === 'h') {
-        setHPos(Math.max(0, Math.min(100, ((e.touches[0].clientX - rect.left) / rect.width) * 100)));
-      } else {
-        setVPos(Math.max(0, Math.min(100, ((e.touches[0].clientY - rect.top) / rect.height) * 100)));
-      }
+      updateDragPosition(e.touches[0].clientX, e.touches[0].clientY);
     };
-    const onEnd = () => { draggingRef.current = null; };
+    const onEnd = () => { draggingRef.current = false; };
 
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onEnd);
@@ -235,9 +232,6 @@ function TripleVideoComparison({
   const cgClip = `inset(0 ${100 - hPos}% 0 0)`;
   const dwdClip = `polygon(${hPos}% 0%, 100% 0%, 100% ${vPos}%, ${hPos}% ${vPos}%)`;
   const methodClip = `polygon(${hPos}% ${vPos}%, 100% ${vPos}%, 100% 100%, ${hPos}% 100%)`;
-
-  // The vertical drag handle sits midway between hPos and the right edge
-  const vHandleX = (hPos + 100) / 2;
 
   return (
     <div
@@ -264,29 +258,19 @@ function TripleVideoComparison({
         <div className="absolute h-[2px] bg-white/70 pointer-events-none"
           style={{ top: `${vPos}%`, left: `${hPos}%`, right: 0, transform: 'translateY(-50%)' }} />
 
-        {/* Horizontal drag handle (controls left/right split) */}
+        {/* Unified drag handle at the divider intersection */}
         <div
-          className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-10 h-10 rounded-full flex items-center justify-center cursor-ew-resize z-20"
-          style={{ left: `${hPos}%`, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(6px)', border: '2px solid rgba(255,255,255,0.7)', boxShadow: '0 0 12px rgba(0,0,0,0.4)' }}
-          onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); draggingRef.current = 'h'; }}
-          onTouchStart={(e) => { e.preventDefault(); draggingRef.current = 'h'; }}
+          className="absolute -translate-x-1/2 -translate-y-1/2 w-11 h-11 rounded-full flex items-center justify-center cursor-move z-20 touch-none"
+          style={{ left: `${hPos}%`, top: `${vPos}%`, background: 'rgba(0,0,0,0.56)', backdropFilter: 'blur(6px)', border: '2px solid rgba(255,255,255,0.72)', boxShadow: '0 0 12px rgba(0,0,0,0.4)' }}
+          onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); draggingRef.current = true; }}
+          onTouchStart={(e) => { e.preventDefault(); draggingRef.current = true; }}
         >
-          <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white">
-            <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z" />
-            <path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z" transform="rotate(180 12 12)" />
-          </svg>
-        </div>
-
-        {/* Vertical drag handle (controls top/bottom split on right side) */}
-        <div
-          className="absolute -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center cursor-ns-resize z-20"
-          style={{ left: `${vHandleX}%`, top: `${vPos}%`, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(6px)', border: '2px solid rgba(255,255,255,0.7)', boxShadow: '0 0 12px rgba(0,0,0,0.4)' }}
-          onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); draggingRef.current = 'v'; }}
-          onTouchStart={(e) => { e.preventDefault(); draggingRef.current = 'v'; }}
-        >
-          <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white" style={{ transform: 'rotate(90deg)' }}>
-            <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z" />
-            <path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z" transform="rotate(180 12 12)" />
+          <svg viewBox="0 0 24 24" className="w-6 h-6 fill-white">
+            <path d="M12 2l2.8 2.8-1.4 1.4-0.4-0.4V10h-2V5.8l-0.4 0.4-1.4-1.4L12 2z" />
+            <path d="M22 12l-2.8 2.8-1.4-1.4 0.4-0.4H14v-2h4.2l-0.4-0.4 1.4-1.4L22 12z" />
+            <path d="M12 22l-2.8-2.8 1.4-1.4 0.4 0.4V14h2v4.2l0.4-0.4 1.4 1.4L12 22z" />
+            <path d="M2 12l2.8-2.8 1.4 1.4-0.4 0.4H10v2H5.8l0.4 0.4-1.4 1.4L2 12z" />
+            <circle cx="12" cy="12" r="2.1" />
           </svg>
         </div>
 
