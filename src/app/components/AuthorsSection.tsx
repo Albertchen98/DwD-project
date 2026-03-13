@@ -6,14 +6,14 @@ const authors = [
   { name: 'Conglang Zhang', sup: '3,4*', affiliation: 'Huawei Riemann Lab / Wuhan Univ.' },
   { name: 'Chuanheng Fu', sup: '3,4*', affiliation: 'Huawei Riemann Lab / Wuhan Univ.' },
   { name: 'Zihao Yang', sup: '5', affiliation: 'USTC' },
-  { name: 'Kaixuan Zhou', sup: '3†', affiliation: 'Huawei Riemann Lab', highlight: true },
+  { name: 'Kaixuan Zhou', sup: '3†', affiliation: 'Huawei Riemann Lab' },
   { name: 'Yizhi Zhang', sup: '3', affiliation: 'Huawei Riemann Lab' },
   { name: 'Jianan He', sup: '3', affiliation: 'Huawei Riemann Lab' },
   { name: 'Yanfeng Zhang', sup: '2', affiliation: 'Huawei Hilbert (Dresden)' },
   { name: 'Mingwei Sun', sup: '3,4', affiliation: 'Huawei Riemann Lab / Wuhan Univ.' },
   { name: 'Zhen Dong', sup: '4', affiliation: 'Wuhan University' },
   { name: 'Xiaoxiao Long', sup: '6', affiliation: 'Nanjing University' },
-  { name: 'Zengmao Wang', sup: '4', affiliation: 'Wuhan University', highlight: true },
+  { name: 'Zengmao Wang', sup: '4', affiliation: 'Wuhan University' },
   { name: 'Liqiu Meng', sup: '1', affiliation: 'TU Munich' },
 ];
 
@@ -70,10 +70,9 @@ export function AuthorsSection() {
           className="flex flex-wrap justify-center gap-x-4 gap-y-2 mb-8"
         >
           {authors.map((author) => (
-            <span key={author.name} className={`text-base ${author.highlight ? 'text-yellow-300' : 'text-slate-200'}`}>
+            <span key={author.name} className={`text-base text-slate-200`}>
               {author.name}
               <sup className="text-xs text-slate-400 ml-0.5">{author.sup}</sup>
-              {author.highlight && <sup className="text-yellow-400 text-xs ml-0.5"> ✉</sup>}
             </span>
           ))}
         </motion.div>
@@ -103,7 +102,6 @@ export function AuthorsSection() {
         >
           <span><sup>*</sup> Equal contribution</span>
           <span><sup>†</sup> Project lead</span>
-          <span><sup>✉</sup> Corresponding author</span>
         </motion.div>
 
         {/* Links */}
